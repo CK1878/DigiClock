@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Routine Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- SCREEN 1: THE CONFIGURATION BACKGROUND PAGE -->
+    <div id="setup-screen" class="panel-view">
+        <div class="setup-card">
+            <h2>⏰ Routine Settings</h2>
+            <p>Set up your family schedule blocks below before launching the clock display.</p>
+            
+            <div class="input-group">
+                <label>☀️ Morning Routine:</label>
+                <div class="time-range">
+                    <input type="time" id="morning-start" value="07:00"> to 
+                    <input type="time" id="morning-end" value="08:30">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>🍽️ Tea Time:</label>
+                <div class="time-range">
+                    <input type="time" id="tea-start" value="17:00"> to 
+                    <input type="time" id="tea-end" value="18:00">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>🌙 Bedtime Routine:</label>
+                <div class="time-range">
+                    <input type="time" id="bedtime-start" value="19:00"> to 
+                    <input type="time" id="bedtime-end" value="19:30">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>🛌 Up The Stairs:</label>
+                <div class="time-range">
+                    <input type="time" id="stairs-start" value="19:30"> to 
+                    <input type="time" id="stairs-end" value="20:00">
+                </div>
+            </div>
+
+            <button id="launch-btn" onclick="launchClock()">Display Clock 🚀</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: THE MAIN CLOCK DISPLAY SCREEN -->
+    <div id="clock-screen" class="display-view hidden">
+        <!-- Dashboard Wrap manages responsive distribution across elongated screens -->
+        <div id="dashboard-layout">
+            
+            <div class="meta-data-block">
+                <div id="date-display">Thursday, 2 July</div>
+                <div id="digital-clock-12">12:00 PM</div>
+                <div id="digital-clock-24">24h format: 12:00</div>
+            </div>
+
+            <div class="clock-frame">
+                <div class="clock-face" id="face">
+                    <div class="hand hour-hand" id="hour-hand"></div>
+                    <div class="hand minute-hand" id="minute-hand"></div>
+                    <div class="hand second-hand" id="second-hand"></div>
+                    <div class="center-nut"></div>
+                    
+                    <div class="marker m12">12</div>
+                    <div class="marker m3">3</div>
+                    <div class="marker m6">6</div>
+                    <div class="marker m9">9</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="routine-banner">
+            <h1 id="routine-text">Free Time ✨</h1>
+        </div>
+        
+        <!-- Subtle hidden return button if you tap the far corner to alter settings -->
+        <button id="back-to-settings" onclick="showSettings()">⚙️</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
