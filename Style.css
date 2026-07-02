@@ -1,0 +1,254 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background 1s ease, color 0.5s ease, border-color 1s ease;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #121214;
+    color: #fff;
+    overflow: hidden;
+}
+
+.hidden { display: none !important; }
+
+/* --- SCREEN 1: INTERACTIVE CONTROL PANEL --- */
+.panel-view {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e1e24 0%, #111115 100%);
+    padding: 20px;
+}
+
+.setup-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 2.5rem;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.setup-card h2 { margin-bottom: 0.5rem; color: #f1c40f; }
+.setup-card p { margin-bottom: 2rem; color: #aaa; font-size: 0.95rem; }
+
+.input-group {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label { font-weight: bold; font-size: 1rem; }
+
+.time-range {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ccc;
+}
+
+input[type="time"] {
+    background: #25252b;
+    border: 1px solid #444;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    outline: none;
+    flex: 1;
+}
+
+#launch-btn {
+    width: 100%;
+    background: #f1c40f;
+    border: none;
+    color: #111;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-top: 1.5rem;
+    cursor: pointer;
+}
+#launch-btn:hover { background: #f39c12; }
+
+/* --- SCREEN 2: LIVE RUNTIME VIEW --- */
+.display-view {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+}
+
+/* Flexbox Layout logic optimization for elongated aspect ratios */
+#dashboard-layout {
+    display: flex;
+    flex-direction: row; /* Default layout for wide/elongated tablet screens */
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+    flex: 1;
+    width: 100%;
+    gap: 2rem;
+}
+
+.meta-data-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --- ADAPTIVE SCHEME CONFIGURATIONS --- */
+
+/* Kids Mode Styles */
+.theme-morning { background: linear-gradient(135deg, #fff7d6, #f39c12); color: #2c3e50; }
+.theme-freetime { background: linear-gradient(135deg, #d4fc79, #96e6a1); color: #1e3c72; }
+.theme-tea { background: linear-gradient(135deg, #ff9a9e, #fecfef); color: #2c3e50; }
+.theme-bedtime { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #112d60; }
+.theme-stairs { background: linear-gradient(135deg, #cfd9df, #e2ebf0); color: #2c3e50; }
+
+.theme-morning .clock-face, .theme-freetime .clock-face, 
+.theme-tea .clock-face, .theme-bedtime .clock-face, .theme-stairs .clock-face {
+    background: #ffffff;
+    border-color: currentColor;
+    color: #2c3e50;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+/* Classy Adult Night Layout Style (Gold Accent Minimalist) */
+.theme-adult {
+    background: radial-gradient(circle at center, #16161d 0%, #070709 100%);
+    color: #dfba6b; /* Soft Metallic Satin Gold */
+}
+.theme-adult .clock-face {
+    background: transparent;
+    border: 3px solid #dfba6b;
+    box-shadow: 0 0 45px rgba(223, 186, 107, 0.08);
+    color: #dfba6b;
+}
+
+/* --- CLOCK PIECES --- */
+.clock-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clock-face {
+    width: 380px;
+    height: 380px;
+    border: 12px solid;
+    border-radius: 50%;
+    position: relative;
+}
+
+.hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    border-radius: 6px;
+    transform: translateX(-50%) rotate(0deg);
+    background-color: #2c3e50;
+}
+
+/* Apply sleek gold hands in adult mode */
+.theme-adult .hand { background-color: #dfba6b; }
+
+.hour-hand { width: 10px; height: 26%; }
+.minute-hand { width: 6px; height: 40%; }
+.second-hand { width: 2px; height: 45%; background-color: #e74c3c; }
+.theme-adult .second-hand { background-color: #7d673a; width: 1px; }
+
+.center-nut {
+    width: 18px;
+    height: 18px;
+    background-color: currentColor;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.marker {
+    position: absolute;
+    font-size: 2.4rem;
+    font-weight: 800;
+}
+.theme-adult .marker { font-weight: 300; }
+
+.m12 { top: 12px; left: 50%; transform: translateX(-50%); }
+.m3 { right: 22px; top: 50%; transform: translateY(-50%); }
+.m6 { bottom: 12px; left: 50%; transform: translateX(-50%); }
+.m9 { left: 22px; top: 50%; transform: translateY(-50%); }
+
+/* --- READOUT TYPOGRAPHY --- */
+#date-display {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+#digital-clock-12 {
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+}
+#digital-clock-24 {
+    font-size: 1.4rem;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+}
+
+#routine-banner {
+    text-align: center;
+    margin-top: 1rem;
+    width: 100%;
+}
+#routine-text {
+    font-size: 3.5rem;
+    font-weight: 800;
+}
+
+.theme-adult #routine-text {
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 4px;
+    opacity: 0.4;
+}
+
+#back-to-settings {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: currentColor;
+    opacity: 0.1;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+#back-to-settings:hover { opacity: 0.8; }
+
+/* Handle narrower aspect ratios gracefully if rotated to portrait orientation */
+@media (max-width: 768px) {
+    #dashboard-layout {
+        flex-direction: column;
+        justify-content: center;
+    }
+    .meta-data-block {
+        text-align: center;
+    }
+}
