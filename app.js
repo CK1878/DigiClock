@@ -1,20 +1,46 @@
-// Global active structure state built from form inputs
-let timeBlocks = [];
+let routines = [];
 
-// Pull configurations from localStorage if they already exist
+// Default starter dataset if localStorage is blank
+const defaultRoutines = [
+    { start: "07:00", end: "08:30", theme: "color-sky", text: "Morning Routine ☀️", sectors: true },
+    { start: "17:00", end: "18:00", theme: "color-sunset", text: "Tea Time! 🍽️", sectors: true },
+    { start: "19:00", end: "19:30", theme: "color-mint", text: "Bedtime Routine 🌙", sectors: true },
+    { start: "19:30", end: "20:00", theme: "color-berry", text: "Up the stairs! 🛌", sectors: false }
+];
+
 window.onload = function() {
-    const cached = localStorage.getItem('routine_clock_config');
-    if (cached) {
-        const parsed = JSON.parse(cached);
-        document.getElementById('morning-start').value = parsed.morningStart;
-        document.getElementById('morning-end').value = parsed.morningEnd;
-        document.getElementById('tea-start').value = parsed.teaStart;
-        document.getElementById('tea-end').value = parsed.teaEnd;
-        document.getElementById('bedtime-start').value = parsed.bedtimeStart;
-        document.getElementById('bedtime-end').value = parsed.bedtimeEnd;
-        document.getElementById('stairs-start').value = parsed.stairsStart;
-        document.getElementById('stairs-end').value = parsed.stairsEnd;
-    }
+    const saved = localStorage.getItem('family_routine_v2');
+    const dataToLoad = saved ? JSON.parse(saved) : defaultRoutines;
+    
+    dataToLoad.forEach(r => addNewRoutineRow(r.start, r.end, r.theme, r.text, r.sectors));
+};
+
+function addNewRoutineRow(start="", end="", theme="color-sky", text="", sectors=false) {
+    const container = document.getElementById('routine-list');
+    const rowId = 'row-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+
+    const rowHtml = `
+        <div class="routine-row" id="${rowId}">
+            <div class="time-range">
+                <input type="time" class="r-start" value="${start}">
+                <input type="time" class="r-end" value="${end}">
+            </div>
+            <input type="text" class="r-text" placeholder="Banner Text (e.g., Party Time! 🎉)" value="${text}">
+            <select class="r-theme">
+                <option value="color-sky" ${theme === 'color-sky' ? 'selected' : ''}>Sky Blue</option>
+                <option value="color-sunset" ${theme === 'color-sunset' ? 'selected' : ''}>Sunset Glow</option>
+                <option value="color-mint" ${theme === 'color-mint' ? 'selected' : ''}>Mint Green</option>
+                <option value="color-berry" ${theme === 'color-berry' ? 'selected' : ''}>Berry Purple</option>
+                <option value="color-midnight" ${theme === 'color-midnight' ? 'selected' : ''}>Midnight Slate</option>
+                <option value="color-gold" ${theme === 'color-gold' ? 'selected' : ''}>Sleek Gold (Adult)</option>
+            </select>
+            <label class="checkbox-container">
+                <input type="checkbox" class="r-sectors" ${sectors ? 'checked' : ''}> Teaching Rings
+            </label>
+            <button class="remove-btn" onclick="document.getElementById('${rowId}').remove()">✕</button>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', rowHtml);
 }
 
 function timeToMinutes(str) {
@@ -23,33 +49,25 @@ function timeToMinutes(str) {
 }
 
 function launchClock() {
-    const conf = {
-        morningStart: document.getElementById('morning-start').value,
-        morningEnd: document.getElementById('morning-end').value,
-        teaStart: document.getElementById('tea-start').value,
-        teaEnd: document.getElementById('tea-end').value,
-        bedtimeStart: document.getElementById('bedtime-start').value,
-        bedtimeEnd: document.getElementById('bedtime-end').value,
-        stairsStart: document.getElementById('stairs-start').value,
-        stairsEnd: document.getElementById('stairs-end').value,
-    };
+    routines = [];
+    const rows = document.querySelectorAll('.routine-row');
+    
+    rows.forEach(row => {
+        routines.push({
+            start: row.querySelector('.r-start').value,
+            end: row.querySelector('.r-end').value,
+            text: row.querySelector('.r-text').value,
+            theme: row.querySelector('.r-theme').value,
+            sectors: row.querySelector('.r-sectors').checked
+        });
+    });
 
-    // Cache parameters safely
-    localStorage.setItem('routine_clock_config', JSON.stringify(conf));
-
-    // Construct array sorting rule matrices
-    timeBlocks = [
-        { start: conf.morningStart, end: conf.morningEnd, theme: "theme-morning", text: "Good Morning! ☀️" },
-        { start: conf.teaStart, end: conf.teaEnd, theme: "theme-tea", text: "Tea Time! 🍽️" },
-        { start: conf.bedtimeStart, end: conf.bedtimeEnd, theme: "theme-bedtime", text: "Bedtime Routine 🌙" },
-        { start: conf.stairsStart, end: conf.stairsEnd, theme: "theme-stairs", text: "Up the stairs! 🛌" }
-    ];
+    localStorage.setItem('family_routine_v2', JSON.stringify(routines));
 
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('clock-screen').classList.remove('hidden');
     
-    // Fire clock logic immediately
-    runEngine();
+    runClockEngine();
 }
 
 function showSettings() {
@@ -57,14 +75,14 @@ function showSettings() {
     document.getElementById('setup-screen').classList.remove('hidden');
 }
 
-function runEngine() {
+function runClockEngine() {
     const now = new Date();
     const hrs = now.getHours();
     const mins = now.getMinutes();
     const secs = now.getSeconds();
-    const activeMinutes = hrs * 60 + mins;
+    const currentMins = hrs * 60 + mins;
 
-    // 1. Move Hands
+    // 1. Update Analog Hands
     const secDegrees = (secs / 60) * 360;
     const minDegrees = ((mins / 60) * 360) + ((secs / 60) * 6);
     const hrDegrees = ((hrs % 12) / 12) * 360 + ((mins / 60) * 30);
@@ -73,50 +91,52 @@ function runEngine() {
     document.getElementById('minute-hand').style.transform = `translateX(-50%) rotate(${minDegrees}deg)`;
     document.getElementById('hour-hand').style.transform = `translateX(-50%) rotate(${hrDegrees}deg)`;
 
-    // 2. Format Digital Readouts
+    // 2. Update Digital Values
     const ampm = hrs >= 12 ? 'PM' : 'AM';
     const hr12 = hrs % 12 || 12;
     const padMins = mins.toString().padStart(2, '0');
 
     document.getElementById('digital-clock-12').innerText = `${hr12}:${padMins} ${ampm}`;
     document.getElementById('digital-clock-24').innerText = `24h: ${hrs.toString().padStart(2, '0')}:${padMins}`;
-    
-    const localeConfig = { weekday: 'long', day: 'numeric', month: 'long' };
-    document.getElementById('date-display').innerText = now.toLocaleDateString('en-GB', localeConfig);
+    document.getElementById('date-display').innerText = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
-    // 3. Process Active Theme Layer
+    // 3. Process Schedule Overlap
     let activeMatch = null;
-
-    // Check custom blocks
-    for (const block of timeBlocks) {
+    for (const block of routines) {
+        if (!block.start || !block.end) continue;
         const start = timeToMinutes(block.start);
         const end = timeToMinutes(block.end);
-        if (activeMinutes >= start && activeMinutes < end) {
-            activeMatch = block;
-            break;
+        
+        if (start <= end) {
+            if (currentMins >= start && currentMins < end) { activeMatch = block; break; }
+        } else {
+            if (currentMins >= start || currentMins < end) { activeMatch = block; break; }
         }
     }
 
-    // Default Fallbacks based on rules if not within a custom input window
+    // Default System Fallbacks
     if (!activeMatch) {
         if (hrs >= 20 || hrs < 7) {
-            // After 8:00 PM or before 7:00 AM -> Minimalist Adult Gold Slate
-            activeMatch = { theme: "theme-adult", text: "🌙 MIDNIGHT LOUNGE" };
+            activeMatch = { theme: "color-gold", text: "🌙 Night Mode", sectors: false };
         } else {
-            // General daytime downtime
-            activeMatch = { theme: "theme-freetime", text: "Free Time ✨" };
+            activeMatch = { theme: "color-sky", text: "Free Time ✨", sectors: false };
         }
     }
 
-    // Apply classes safely
-    document.getElementById('clock-screen').className = "display-view " + activeMatch.theme;
+    // 4. Update Framework Styles
+    const screen = document.getElementById('clock-screen');
+    screen.className = "display-view " + activeMatch.theme;
     document.getElementById('routine-text').innerText = activeMatch.text;
+
+    if (activeMatch.sectors) {
+        screen.classList.add('show-sectors');
+    } else {
+        screen.classList.remove('show-sectors');
+    }
 }
 
-// Tick loop
 setInterval(() => {
-    // Check if display layout is hidden to save performance overhead
     if(!document.getElementById('clock-screen').classList.contains('hidden')) {
-        runEngine();
+        runClockEngine();
     }
 }, 1000);
