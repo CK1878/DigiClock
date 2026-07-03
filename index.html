@@ -8,60 +8,36 @@
 </head>
 <body>
 
-    <!-- SCREEN 1: THE CONFIGURATION BACKGROUND PAGE -->
+    <!-- CONFIGURATION SCREEN -->
     <div id="setup-screen" class="panel-view">
         <div class="setup-card">
-            <h2>⏰ Routine Settings</h2>
-            <p>Set up your family schedule blocks below before launching the clock display.</p>
+            <h2>⚙️ Advanced Routine Builder</h2>
+            <p>Customise your day. Add, remove, or adjust time blocks for parties, weekend shifts, or routines.</p>
             
-            <div class="input-group">
-                <label>☀️ Morning Routine:</label>
-                <div class="time-range">
-                    <input type="time" id="morning-start" value="07:00"> to 
-                    <input type="time" id="morning-end" value="08:30">
-                </div>
-            </div>
+            <!-- Dynamic Container for Slots -->
+            <div id="routine-list"></div>
 
-            <div class="input-group">
-                <label>🍽️ Tea Time:</label>
-                <div class="time-range">
-                    <input type="time" id="tea-start" value="17:00"> to 
-                    <input type="time" id="tea-end" value="18:00">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>🌙 Bedtime Routine:</label>
-                <div class="time-range">
-                    <input type="time" id="bedtime-start" value="19:00"> to 
-                    <input type="time" id="bedtime-end" value="19:30">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>🛌 Up The Stairs:</label>
-                <div class="time-range">
-                    <input type="time" id="stairs-start" value="19:30"> to 
-                    <input type="time" id="stairs-end" value="20:00">
-                </div>
-            </div>
-
+            <button class="secondary-btn" onclick="addNewRoutineRow()">➕ Add Extra Routine Part</button>
             <button id="launch-btn" onclick="launchClock()">Display Clock 🚀</button>
         </div>
     </div>
 
-    <!-- SCREEN 2: THE MAIN CLOCK DISPLAY SCREEN -->
+    <!-- MAIN CLOCK SCREEN -->
     <div id="clock-screen" class="display-view hidden">
-        <!-- Dashboard Wrap manages responsive distribution across elongated screens -->
         <div id="dashboard-layout">
             
+            <!-- Metadata Side Panel -->
             <div class="meta-data-block">
-                <div id="date-display">Thursday, 2 July</div>
-                <div id="digital-clock-12">12:00 PM</div>
-                <div id="digital-clock-24">24h format: 12:00</div>
+                <div id="date-display">--</div>
+                <div id="digital-clock-12">00:00 AM</div>
+                <div id="digital-clock-24">24h: 00:00</div>
             </div>
 
+            <!-- Clock Core Frame -->
             <div class="clock-frame">
+                <!-- Teaching visual segment layers go here dynamically -->
+                <div id="learning-sectors-bg"></div>
+                
                 <div class="clock-face" id="face">
                     <div class="hand hour-hand" id="hour-hand"></div>
                     <div class="hand minute-hand" id="minute-hand"></div>
@@ -78,10 +54,9 @@
         </div>
 
         <div id="routine-banner">
-            <h1 id="routine-text">Free Time ✨</h1>
+            <h1 id="routine-text">--</h1>
         </div>
         
-        <!-- Subtle hidden return button if you tap the far corner to alter settings -->
         <button id="back-to-settings" onclick="showSettings()">⚙️</button>
     </div>
 
